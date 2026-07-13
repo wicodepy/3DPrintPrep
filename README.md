@@ -74,4 +74,4 @@ The script utilizes Blender's `bpy`, `mathutils`, and `bmesh`:
 - When keymaking, ensure that the cut axis is closer to center of mass and does not extend past either top or bottom piece.
 
   ## Contributing
-- Install as an addon in Blender.
+- No
