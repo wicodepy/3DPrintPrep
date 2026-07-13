@@ -11,6 +11,10 @@ A Blender add-on that cuts a 3D object can make cuts and keys. This is particula
 - Can be undone with `Ctrl+Z`.
 - Located in the 3D Viewport Sidebar (`N` panel) under 3DPrintPrep tab.
 
+## Quick Start
+- Install as an addon in Blender.
+- Select a mesh object.
+- Select the button.
 
 ## Installation
 
@@ -57,6 +61,8 @@ The script utilizes Blender's `bpy`, `mathutils`, and `bmesh`:
 6. Uses booleans to cut the top and bottom.
 7. Uses booleans to join/cut the key and hole to top and bottom.
 
+## Motivation
+- There was a need for a 3D tool that could cut and make keys.
 
 ## Limitations
 
@@ -65,3 +71,7 @@ The script utilizes Blender's `bpy`, `mathutils`, and `bmesh`:
 - Users may have difficulty with more organically shaped models/limbs or where more than one part of the mesh exceeds the print.
 - Aim to cut along a section where only one solid body intersects the cut line.
 - The key(protruding part) will always attach to the bottom piece. This is for ease of FDM printing.
+- When keymaking, ensure that the cut axis is closer to center of mass and does not extend past either top or bottom piece.
+
+  ## Contributing
+- Install as an addon in Blender.
