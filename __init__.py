@@ -57,6 +57,15 @@ class PrintPrepSettings(bpy.types.PropertyGroup):
         unit='LENGTH'
     )
 
+    # SHELLMAKER SETTINGS
+
+    shellm_cut_height: bpy.props.FloatProperty(
+        name="Global Cut Height",
+        description="PLACEHOLDER FOR SHELL: Global Z value to cut the object along",
+        default=0.0,
+        unit='LENGTH'
+    )
+
 class CUTMAKER_PT_Panel(bpy.types.Panel):
     bl_label = "Cutmaker"   # The display name that appears in the panel header.
     bl_idname = "CUTMAKER_PT_Panel" # The unique identifier for the panel. By convention, it consists of an uppercase category abbreviation and the panel name (e.g., VIEW3D_PT_my_panel)
@@ -89,6 +98,22 @@ class KEYMAKER_PT_Panel(bpy.types.Panel):
         layout.prop(props, "clearance")
         
         layout.operator("mesh.make_keys", text="Make keys")
+
+class SHELLMAKER_PT_Panel(bpy.types.Panel):
+    bl_label = "Shellmaker"   # The display name that appears in the panel header.
+    bl_idname = "SHELLMAKER_PT_Panel" # The unique identifier for the panel. By convention, it consists of an uppercase category abbreviation and the panel name (e.g., VIEW3D_PT_my_panel)
+    bl_space_type = 'VIEW_3D'   # The Blender workspace area the panel belongs to (e.g., VIEW_3D for the 3D Viewport or PROPERTIES for the Properties Editor sidebar).
+    bl_region_type = 'UI'   # The specific UI region within the space (e.g., WINDOW for main areas, UI for the Sidebar/N-panel, or HEADER).
+    bl_category = '3D Print Prep' # The name of the tab in the UI region (e.g., your add-on's name).
+
+    def draw(self, context):
+        layout = self.layout
+        props = context.scene.PrintPrep3D  # Pull values from our custom container class. Access properties via PropertyGroup reference
+
+
+        layout.prop(props, "shellm_cut_height")    # 1st parameter is data container, 2nd parameter is accesses
+        
+        layout.operator("mesh.make_shells", text="Make shells")
 
 class CUTMAKER_OT_MakeCuts(bpy.types.Operator):
     bl_idname = "mesh.make_cuts"    # This is a mandatory string variable used to uniquely identify and register custom tools, menus, panels, and operators
@@ -422,23 +447,58 @@ class KEYMAKER_OT_MakeKeys(bpy.types.Operator):
 
         self.report({'INFO'}, "Successfully keyed mesh!")
         return {'FINISHED'}
+    
+class SHELLMAKER_OT_MakeShells(bpy.types.Operator):
+    bl_idname = "mesh.make_shells"    # This is a mandatory string variable used to uniquely identify and register custom tools, menus, panels, and operators
+    bl_label = "Make Shells"  # This is a string that determines the visible name of the operator as it appears to the user in menus, buttons, and the Undo/Redo history panel
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        orig_obj = context.active_object
+        props = context.scene.PrintPrep3D  # Pull values from our custom container class. Access properties via PropertyGroup reference
+
+        # Object selection and type check
+        if not orig_obj or orig_obj.type != 'MESH':
+            self.report({'ERROR'}, "Please select a target mesh object.")
+            return {'CANCELLED'}
+
+        # Ensure all transformations are applied for correct spatial calculations
+        bpy.ops.object.mode_set(mode='OBJECT')
+        bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
+
+        # Declare variable names for settings from panel
+        
+        # Shellmaker settings
+        cut_z = props.keym_cut_height
+        
+        self.report({'INFO'}, "Successfully cut mesh!")
+        return {'FINISHED'}
+        
 
 def register():
     bpy.utils.register_class(PrintPrepSettings)
+    
     bpy.utils.register_class(CUTMAKER_PT_Panel)
     bpy.utils.register_class(KEYMAKER_PT_Panel)
+    bpy.utils.register_class(SHELLMAKER_PT_Panel)
+
     bpy.utils.register_class(CUTMAKER_OT_MakeCuts)
     bpy.utils.register_class(KEYMAKER_OT_MakeKeys)
+    bpy.utils.register_class(SHELLMAKER_OT_MakeShells)
     
     # Map our unified container class structure to Scene settings
     bpy.types.Scene.PrintPrep3D = bpy.props.PointerProperty(type=PrintPrepSettings)
 
 def unregister():
     bpy.utils.unregister_class(PrintPrepSettings)
+    
     bpy.utils.unregister_class(CUTMAKER_PT_Panel)
     bpy.utils.unregister_class(KEYMAKER_PT_Panel)
+    bpy.utils.unregister_class(SHELLMAKER_PT_Panel)
+
     bpy.utils.unregister_class(CUTMAKER_OT_MakeCuts)
     bpy.utils.unregister_class(KEYMAKER_OT_MakeKeys)
+    bpy.utils.unregister_class(SHELLMAKER_OT_MakeShells)
     
     del bpy.types.Scene.PrintPrep3D
 
