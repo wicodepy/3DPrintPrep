@@ -3,7 +3,7 @@ id = "3dprintprep"
 version = "1.0.0"
 name = "3D Print Prep"
 tagline = "Make cuts/keys to prepare your mesh for 3D printing"
-description = ""
+description = "A Blender add-on that cuts a 3D object can make cuts and keys. This is particularly useful for 3D printing preparation where you need to split a mesh."
 maintainer = "wicodepy"
 type = "add-on"
 
